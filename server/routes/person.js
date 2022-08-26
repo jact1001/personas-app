@@ -49,4 +49,66 @@ recordRoutes.route("/query-2").get(function (req, res) {
         });
 });
 
+recordRoutes.route("/query-3").get(function (req, res) {
+    let db_connect = dbo.getDb();
+    db_connect.
+        collection("question")
+        .aggregate([
+            {
+                '$match': {
+                    '$and': [
+                        {
+                            'register_date': {
+                                '$gte': '2021-01-01'
+                            }
+                        }, {
+                            'register_date': {
+                                '$lt': '2022-01-01'
+                            }
+                        }, {
+                            'is_censored': false
+                        }
+                    ]
+                }
+            },
+            {
+                '$redact': {
+                    '$cond': [
+                        {
+                            '$gte': [
+                                {
+                                    '$size': {
+                                        '$setDifference': [
+                                            {
+                                                '$map': {
+                                                    'input': '$answers',
+                                                    'as': 'answer',
+                                                    'in': {
+                                                        '$cond': [
+                                                            {
+                                                                '$eq': [
+                                                                    '$$answer.is_censored', false
+                                                                ]
+                                                            }, '$$answer', false
+                                                        ]
+                                                    }
+                                                }
+                                            }, [
+                                                false
+                                            ]
+                                        ]
+                                    }
+                                }, 10
+                            ]
+                        }, '$$KEEP', '$$PRUNE'
+                    ]
+                }
+            }
+        ])
+        .toArray(function (err, result) {
+        if (err) throw err;
+        res.json(result);
+    })
+});
+
 module.exports = recordRoutes;
