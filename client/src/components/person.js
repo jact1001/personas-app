@@ -12,10 +12,11 @@ export default function Create() {
     const [queries, setQueries] = useState([]);
     const params = useParams();
 
-    useEffect(() => {
+    useEffect(async () => {
         getPerson();
-        getQuestion(1);
-        getQuestion(2);
+        await getQuestion(1);
+        await getQuestion(2);
+        await getQuestion(3);
     }, [params.id]);
 
     const getPerson = async () => {
@@ -39,10 +40,12 @@ export default function Create() {
             window.alert(message);
         }
         const query = await response.json();
+        console.log(query)
         if (!query) {
             window.alert(`queries with id not found`);
         }
-        setQueries(arr => [query, ...arr]);
+        setQueries(arr => [...arr, query]);
+        console.log(queries);
     }
 
     return (
@@ -77,6 +80,21 @@ export default function Create() {
                             <ListGroup>
                                 {queries && queries[1] && queries[1].map((question, index) => {
                                     return(<ListGroup.Item key={index}>{question.description} <Badge bg="primary"> {question.register_date}</Badge></ListGroup.Item>)
+                                })}
+                            </ListGroup>
+                        </Accordion.Body>
+                    </Accordion.Item>
+                    <Accordion.Item eventKey="2">
+                        <Accordion.Header>Query #3</Accordion.Header>
+                        <Accordion.Body>
+                            <ListGroup>
+                                {queries && queries[2] && queries[2].map((question, index) => {
+                                    return(
+                                        <ListGroup.Item key={index}>
+                                            {question.description} &nbsp;
+                                            <Badge bg="primary">{question.register_date}</Badge> &nbsp;
+                                            <Badge bg="secondary">con {question.answers.length} respuestas</Badge>
+                                        </ListGroup.Item>)
                                 })}
                             </ListGroup>
                         </Accordion.Body>
