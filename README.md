@@ -12,4 +12,4 @@ Para leventar el servidor ejecutar por consola:
 2. npm i
 4. node server.js
 
-Para la ver la información de una persona http://localhost:3000/6308194ab8aed41b391849d3, el id corresponde al que genera mongo
+Para la ver la información de una persona http://localhost:3000/user4, por username
